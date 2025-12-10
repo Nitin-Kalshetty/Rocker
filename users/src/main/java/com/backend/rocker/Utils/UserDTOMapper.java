@@ -10,6 +10,16 @@ public class UserDTOMapper {
         userDTO.setUsername(user.getEmail());
         userDTO.setPhoneNumber(user.getPhoneNumber());
         userDTO.setEmail(user.getEmail());
+        userDTO.setUserId(user.getId());
         return userDTO;
+    }
+
+    public static User convertDtoToUser(UserDTO userDTO){
+        User user = new User();
+        user.setName(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPasswod(userDTO.getPassword());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        return user;
     }
 }

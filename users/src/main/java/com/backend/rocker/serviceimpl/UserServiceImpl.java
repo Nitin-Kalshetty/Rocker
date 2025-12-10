@@ -23,8 +23,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO registerUser(User user) {
-
+    public UserDTO registerUser(UserDTO requestUser) {
+        User user = UserDTOMapper.convertDtoToUser(requestUser);
         Optional<User> duplicateRecord = userRepository.findDuplicateRecord(
                 user.getName(),
                 user.getPhoneNumber(),
@@ -63,7 +63,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(User user) {
+    public UserDTO updateUser(UserDTO requestUser) {
+        User user = UserDTOMapper.convertDtoToUser(requestUser);
         return UserDTOMapper.convertUserToDto(userRepository.save(user));
     }
 

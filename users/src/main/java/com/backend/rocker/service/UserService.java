@@ -5,7 +5,7 @@ import com.backend.rocker.model.User;
 
 public interface UserService {
 
-    public UserDTO registerUser(User user);
+    public UserDTO registerUser(UserDTO user);
 
     public UserDTO getUserByUserId(Long userId);
 
@@ -13,7 +13,7 @@ public interface UserService {
 
     public UserDTO getUserByEmail(String email);
 
-    public UserDTO updateUser(User user);
+    public UserDTO updateUser(UserDTO user);
 
     public UserDTO deleteUserById(Long userId);
 

@@ -24,6 +24,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> registerUser(@RequestBody @Valid UserDTO requestDTO){
+        logger.info("Triggered Register User Endpoint");
         return new ResponseEntity<>(userService.registerUser(requestDTO), HttpStatus.CREATED);
     }
 

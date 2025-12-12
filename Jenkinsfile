@@ -2,46 +2,52 @@ pipeline {
     agent any
 
     environment {
-        SERVICE = ""
         DEPLOY_DIR = "/opt/rocker/deploy/services"
     }
 
     stages {
+
         stage('Detect Changed Service') {
             steps {
                 script {
+                    // define SERVICE dynamically
+                    env.SERVICE = ""
+
                     def changes = sh(
                         script: "git diff --name-only HEAD~1 HEAD",
                         returnStdout: true
                     ).trim()
 
-                    if (changes.contains("users/")) SERVICE = "users"
+                    if (changes.contains("users/")) {
+                        env.SERVICE = "users"
+                    }
+
+                    echo "Changed service: ${env.SERVICE}"
                 }
-                echo "Changed service: ${SERVICE}"
             }
         }
 
         stage('Build Service') {
-            when { expression { SERVICE != "" } }
+            when { expression { env.SERVICE?.trim() } }
             steps {
-                sh "cd ${SERVICE} && ./mvn clean package -DskipTests"
+                sh "cd ${env.SERVICE} && mvn clean package -DskipTests"
             }
         }
 
         stage('Deploy JAR') {
-            when { expression { SERVICE != "" } }
+            when { expression { env.SERVICE?.trim() } }
             steps {
                 sh """
-                    mkdir -p ${DEPLOY_DIR}/${SERVICE}
-                    cp ${SERVICE}/target/*.jar ${DEPLOY_DIR}/${SERVICE}/app.jar
+                    mkdir -p ${DEPLOY_DIR}/${env.SERVICE}
+                    cp ${env.SERVICE}/target/*.jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar
 
-                    # stop old service
-                    pkill -f "${SERVICE}/app.jar" || true
+                    pkill -f "${DEPLOY_DIR}/${env.SERVICE}/app.jar" || true
 
-                    # start new service
-                    nohup java -jar ${DEPLOY_DIR}/${SERVICE}/app.jar > ${DEPLOY_DIR}/${SERVICE}/log.txt 2>&1 &
+                    nohup java -jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar \
+                        > ${DEPLOY_DIR}/${env.SERVICE}/log.txt 2>&1 &
                 """
             }
         }
     }
 }
+

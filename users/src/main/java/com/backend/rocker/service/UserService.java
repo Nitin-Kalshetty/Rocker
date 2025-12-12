@@ -21,7 +21,7 @@ public interface UserService {
 
     public UserDTO deleteUserByEmail(String email);
 
-    public UserDTO validateUserByUsernameAndPassword(String username,String password);
+//    public UserDTO validateUserByUsernameAndPassword(String username,String password);
 
 
 }

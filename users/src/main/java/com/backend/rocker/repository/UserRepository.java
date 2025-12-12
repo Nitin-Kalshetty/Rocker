@@ -15,12 +15,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByName(String name);
-    
-    @Query("""
-            select u from User u where 
-                        u.name = :name or 
-                        u.phoneNumber = :phoneNumber or 
-                        u.email = :email
-            """)
-    Optional<User> findDuplicateRecord(String name, String phoneNumber, String email);
+
+    User findFirstByNameOrPhoneNumberOrEmail(String name, String phoneNumber, String email);
+
 }

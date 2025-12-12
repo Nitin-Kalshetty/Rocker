@@ -25,23 +25,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO registerUser(UserDTO requestUser) {
         User user = UserDTOMapper.convertDtoToUser(requestUser);
-        Optional<User> duplicateRecord = userRepository.findDuplicateRecord(
+        User duplicate = userRepository.findFirstByNameOrPhoneNumberOrEmail(
                 user.getName(),
                 user.getPhoneNumber(),
-                user.getEmail()
-        );
-        if (duplicateRecord.isPresent()) {
-            User duplicate = duplicateRecord.get();
-            if (Objects.equals(duplicate.getName(), user.getName()))
+                user.getEmail());
+        if (duplicate != null) {
+            if (duplicate.getName().equalsIgnoreCase(user.getName())) {
                 throw new DuplicateRecordFound("Username Already Exists");
-            if (Objects.equals(duplicate.getPhoneNumber(), user.getPhoneNumber()))
+            }
+            if (duplicate.getPhoneNumber().equals(user.getPhoneNumber())) {
                 throw new DuplicateRecordFound("Phone Number Already Registered");
-            if (Objects.equals(duplicate.getEmail(), user.getEmail()))
+            }
+            if (duplicate.getEmail().equalsIgnoreCase(user.getEmail())) {
                 throw new DuplicateRecordFound("Email Already Registered");
+            }
         }
         User saved = userRepository.save(user);
         return UserDTOMapper.convertUserToDto(saved);
     }
+
 
 
     @Override

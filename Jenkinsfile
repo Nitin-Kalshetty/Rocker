@@ -35,31 +35,23 @@ pipeline {
         }
 
         stage('Deploy JAR') {
-	    when { expression { env.SERVICE?.trim() } }
-	    steps {
-		sh """
-		    # Create directories
-		    mkdir -p ${DEPLOY_DIR}/${env.SERVICE}/logs
+    when { expression { env.SERVICE?.trim() } }
+    steps {
+        sh """
+            mkdir -p ${DEPLOY_DIR}/${env.SERVICE}/logs
+            chmod -R 777 ${DEPLOY_DIR}/${env.SERVICE}
 
-		    # Ensure all users can write (AWS-safe)
-		    chmod -R 777 ${DEPLOY_DIR}/${env.SERVICE}
+            cp ${env.SERVICE}/target/*.jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar
 
-		    # Copy JAR
-		    cp ${env.SERVICE}/target/*.jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar
+            pkill -f "${DEPLOY_DIR}/${env.SERVICE}/app.jar" || true
 
-		    # Kill old process if exists
-		    pkill -f "${DEPLOY_DIR}/${env.SERVICE}/app.jar" || true
+            echo "Starting new app instance..."
 
-		    echo "Starting new app instance..."
+            nohup bash -c \\"java -jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar >> ${DEPLOY_DIR}/${env.SERVICE}/logs/system.out.log 2>&1\\" &
+        """
+    }
+}
 
-		    # Start in background properly
-		    nohup bash -c "java -jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar \
-			>> ${DEPLOY_DIR}/${env.SERVICE}/logs/system.out.log 2>&1" &
-
-		    sleep 3
-		"""
-	    }
-	}
 
 
 

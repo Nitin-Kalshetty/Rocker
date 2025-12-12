@@ -38,17 +38,28 @@ pipeline {
 	    when { expression { env.SERVICE?.trim() } }
 	    steps {
 		sh """
+		    # Create service folder
 		    mkdir -p ${DEPLOY_DIR}/${env.SERVICE}
+
+		    # Create logs folder (Jenkins auto-creates)
 		    mkdir -p ${DEPLOY_DIR}/${env.SERVICE}/logs
 
+		    # Give full permissions so app can write logs
+		    chmod -R 777 ${DEPLOY_DIR}/${env.SERVICE}
+
+		    # Copy new JAR
 		    cp ${env.SERVICE}/target/*.jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar
 
+		    # Kill previous running instance
 		    pkill -f "${DEPLOY_DIR}/${env.SERVICE}/app.jar" || true
 
-		    nohup bash -c "java -jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar > ${DEPLOY_DIR}/${env.SERVICE}/logs/system.out.log 2>&1" &
+		    # Start the new instance
+		    nohup bash -c "java -jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar \
+		        > ${DEPLOY_DIR}/${env.SERVICE}/logs/system.out.log 2>&1" &
 		"""
 	    }
-	}
+}
+
 
 
     }

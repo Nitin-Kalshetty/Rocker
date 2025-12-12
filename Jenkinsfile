@@ -35,19 +35,21 @@ pipeline {
         }
 
         stage('Deploy JAR') {
-            when { expression { env.SERVICE?.trim() } }
-            steps {
-                sh """
-                    mkdir -p ${DEPLOY_DIR}/${env.SERVICE}
-                    cp ${env.SERVICE}/target/*.jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar
+    when { expression { env.SERVICE?.trim() } }
+    steps {
+        sh """
+            mkdir -p ${DEPLOY_DIR}/${env.SERVICE}
+            cp ${env.SERVICE}/target/*.jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar
 
-                    pkill -f "${DEPLOY_DIR}/${env.SERVICE}/app.jar" || true
+            echo "Stopping old process..."
+            pkill -f "${DEPLOY_DIR}/${env.SERVICE}/app.jar" || true
 
-                    nohup java -jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar \
-                        > ${DEPLOY_DIR}/${env.SERVICE}/log.txt 2>&1 &
-                """
-            }
-        }
+            echo "Starting new process..."
+            nohup bash -c "java -jar ${DEPLOY_DIR}/${env.SERVICE}/app.jar > ${DEPLOY_DIR}/${env.SERVICE}/log.txt 2>&1" &
+        """
+    }
+}
+
     }
 }
 

@@ -6,7 +6,6 @@ pipeline {
     }
 
     stages {
-
         stage('Detect Changed Service') {
             steps {
                 script {
@@ -17,9 +16,7 @@ pipeline {
                         returnStdout: true
                     ).trim()
 
-                    if (changes.split("\n").any { 
-                        it.startsWith("users/") || it == "Jenkinsfile" 
-                    }) {
+                    if (changes.split("\n").any { it.startsWith("users/") || it == "Jenkinsfile" }) {
                         env.SERVICE = "users"
                     }
 
@@ -39,61 +36,93 @@ pipeline {
             when { expression { env.SERVICE?.trim() } }
             steps {
                 script {
+                    // Create a standalone deployment script
+                    writeFile file: 'deploy_app.sh', text: """#!/bin/bash
+set -e
+set -o pipefail
 
-                    def service = env.SERVICE
-                    def targetDir = "${DEPLOY_DIR}/${service}"
+SERVICE="${env.SERVICE}"
+DEPLOY_DIR="${DEPLOY_DIR}"
+TARGET_DIR="\${DEPLOY_DIR}/\${SERVICE}"
 
-                    sh """
-                        echo "Deploying ${service}..."
+echo "Deploying service: \${SERVICE} to \${TARGET_DIR}"
 
-                        mkdir -p ${targetDir}/logs
-                        chmod -R 755 ${targetDir}
+# Create directories
+mkdir -p "\${TARGET_DIR}/logs"
+chmod -R 755 "\${TARGET_DIR}"
 
-                        echo "Copying JAR..."
-                        cp ${service}/target/*.jar ${targetDir}/app.jar
-                    
-                        echo "Stopping old process..."
-                        pkill -f "${targetDir}/app.jar" || true
-                        sleep 2
+# Copy JAR
+cp "\${SERVICE}/target/"*.jar "\${TARGET_DIR}/app.jar"
 
-                        echo "Creating startup script..."
-                        cat > ${targetDir}/start.sh << 'EOF'
+# Stop old process
+echo "Stopping old process..."
+pkill -f "\${TARGET_DIR}/app.jar" || true
+sleep 3
+# Force kill if still running
+pkill -9 -f "\${TARGET_DIR}/app.jar" 2>/dev/null || true
+
+echo "Starting service..."
+cd "\${TARGET_DIR}"
+
+# METHOD 1: Use start-stop-daemon if available (recommended)
+if command -v start-stop-daemon >/dev/null 2>&1; then
+    echo "Using start-stop-daemon..."
+    start-stop-daemon \
+        --start \
+        --background \
+        --make-pidfile \
+        --pidfile "\${TARGET_DIR}/app.pid" \
+        --chdir "\${TARGET_DIR}" \
+        --exec /usr/bin/java \
+        -- \
+        -jar app.jar \
+        >> "\${TARGET_DIR}/logs/system.out.log" 2>&1
+else
+    # METHOD 2: Robust nohup with proper shell
+    echo "Using nohup (fallback)..."
+    # Create a startup script
+    cat > "\${TARGET_DIR}/start.sh" << 'EOF'
 #!/bin/bash
-cd "$(dirname "$0")"
-
-echo "Starting application..."
-nohup java -jar app.jar >> logs/system.out.log 2>&1 &
-PID=$!
-echo "PID: \$PID"
-echo \$PID > app.pid
+cd "\$(dirname "\$0")"
+exec java -jar app.jar >> logs/system.out.log 2>&1
 EOF
+    
+    chmod +x "\${TARGET_DIR}/start.sh"
+    
+    # Run with setsid to detach properly
+    setsid nohup "\${TARGET_DIR}/start.sh" </dev/null >/dev/null 2>&1 &
+    
+    # Alternative: Use a proper daemon script
+    # nohup bash -c "cd '\${TARGET_DIR}' && exec java -jar app.jar >> logs/system.out.log 2>&1" </dev/null >/dev/null 2>&1 &
+fi
 
-                        chmod +x ${targetDir}/start.sh
+sleep 5
 
-                        echo "Running startup script..."
-                        ${targetDir}/start.sh
-
-                        sleep 2
-
-                        echo "Checking process..."
-
-                        if ps -p \$(cat ${targetDir}/app.pid) > /dev/null 2>&1; then
-                            echo "✅ App running with PID \$(cat ${targetDir}/app.pid)"
-                        else
-                            echo "❌ PID missing, checking by process name..."
-                            if ps aux | grep "[j]ava.*${targetDir}/app.jar" > /dev/null; then
-                                echo "✅ App IS running (found by name)"
-                            else
-                                echo "❌ App failed to start!"
-                                echo "Last 10 log lines:"
-                                tail -10 ${targetDir}/logs/system.out.log || echo "No logs"
-                                exit 1
-                            fi
-                        fi
+# Verify process is running
+echo "Verifying process..."
+if ps aux | grep -v grep | grep -q "java.*\${TARGET_DIR}/app.jar"; then
+    PID=\$(ps aux | grep -v grep | grep "java.*\${TARGET_DIR}/app.jar" | awk '{print \$2}' | head -1)
+    echo "✅ Service started successfully! PID: \${PID}"
+    echo "\${PID}" > "\${TARGET_DIR}/app.pid"
+    
+    # Check if it's actually responding (optional)
+    echo "Process info:"
+    ps -p "\${PID}" -f 2>/dev/null || true
+else
+    echo "❌ FAILED to start service!"
+    echo "Last 20 lines of log:"
+    tail -20 "\${TARGET_DIR}/logs/system.out.log" 2>/dev/null || echo "No log file found"
+    exit 1
+fi
+"""
+                    
+                    // Execute the deployment script
+                    sh """
+                        chmod +x deploy_app.sh
+                        ./deploy_app.sh
                     """
                 }
             }
         }
     }
 }
-

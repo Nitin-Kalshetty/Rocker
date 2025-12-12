@@ -22,6 +22,8 @@ public class UserDTO {
 
     private Long userId;
 
+    private String jwtToken;
+
     public String getUsername() {
         return username;
     }
@@ -56,5 +58,13 @@ public class UserDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getJwtToken() {
+        return jwtToken;
+    }
+
+    public void setJwtToken(String jwtToken) {
+        this.jwtToken = jwtToken;
     }
 }

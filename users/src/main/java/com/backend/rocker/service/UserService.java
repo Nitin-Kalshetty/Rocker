@@ -20,4 +20,8 @@ public interface UserService {
     public UserDTO deleteUserByPhone(String phoneNumber);
 
     public UserDTO deleteUserByEmail(String email);
+
+    public UserDTO validateUserByUsernameAndPassword(String username,String password);
+
+
 }

@@ -8,24 +8,24 @@ pipeline {
     stages {
 
         stage('Detect Changed Service') {
-            steps {
-                script {
-                    // define SERVICE dynamically
-                    env.SERVICE = ""
+    steps {
+        script {
+            env.SERVICE = ""
 
-                    def changes = sh(
-                        script: "git diff --name-only HEAD~1 HEAD",
-                        returnStdout: true
-                    ).trim()
+            def changes = sh(
+                script: "git diff --name-only HEAD~1 HEAD",
+                returnStdout: true
+            ).trim()
 
-                    if (changes.contains("users/")) {
-                        env.SERVICE = "users"
-                    }
-
-                    echo "Changed service: ${env.SERVICE}"
-                }
+            if (changes.split("\n").any { it.startsWith("users/") || it == "Jenkinsfile" }) {
+                env.SERVICE = "users"
             }
+
+            echo "Changed service: ${env.SERVICE}"
         }
+    }
+}
+
 
         stage('Build Service') {
             when { expression { env.SERVICE?.trim() } }

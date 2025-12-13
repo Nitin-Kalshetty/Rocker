@@ -9,7 +9,6 @@ import com.backend.rocker.repository.UserRepository;
 import com.backend.rocker.service.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -24,22 +23,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO registerUser(UserDTO requestUser) {
-        User user = UserDTOMapper.convertDtoToUser(requestUser);
         User duplicate = userRepository.findFirstByNameOrPhoneNumberOrEmail(
-                user.getName(),
-                user.getPhoneNumber(),
-                user.getEmail());
+                requestUser.getUsername(),
+                requestUser.getPhoneNumber(),
+                requestUser.getEmail());
         if (duplicate != null) {
-            if (duplicate.getName().equalsIgnoreCase(user.getName())) {
+            if (duplicate.getUsername().equalsIgnoreCase(requestUser.getUsername())) {
                 throw new DuplicateRecordFound("Username Already Exists");
             }
-            if (duplicate.getPhoneNumber().equals(user.getPhoneNumber())) {
+            if (duplicate.getPhoneNumber().equals(requestUser.getPhoneNumber())) {
                 throw new DuplicateRecordFound("Phone Number Already Registered");
             }
-            if (duplicate.getEmail().equalsIgnoreCase(user.getEmail())) {
+            if (duplicate.getEmail().equalsIgnoreCase(requestUser.getEmail())) {
                 throw new DuplicateRecordFound("Email Already Registered");
             }
         }
+        User user = UserDTOMapper.convertDtoToUser(requestUser);
         User saved = userRepository.save(user);
         return UserDTOMapper.convertUserToDto(saved);
     }

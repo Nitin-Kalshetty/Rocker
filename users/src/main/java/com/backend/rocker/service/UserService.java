@@ -23,5 +23,4 @@ public interface UserService {
 
 //    public UserDTO validateUserByUsernameAndPassword(String username,String password);
 
-
 }

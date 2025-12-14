@@ -33,4 +33,14 @@ public class UserDTOMapper {
         user.setPhoneNumber(userDTO.getPhoneNumber());
         return user;
     }
+
+    public static UserDTO convertUserToDto(User user,String jwtToken){
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(user.getEmail());
+        userDTO.setPhoneNumber(user.getPhoneNumber());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setUserId(user.getId());
+        userDTO.setJwtToken(jwtToken);
+        return userDTO;
+    }
 }

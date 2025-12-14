@@ -21,7 +21,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserDTO> loginUser(@RequestBody @Valid UserDTO requestDTO){
-        logger.info("Triggered Register User Endpoint");
+        logger.info("Triggered Login User Endpoint");
         return new ResponseEntity<>(new UserDTO(), HttpStatus.CREATED);
     }
 }

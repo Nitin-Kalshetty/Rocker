@@ -1,6 +1,7 @@
 package com.backend.rocker.security;
 
 import com.backend.rocker.model.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,5 +31,12 @@ public class JwtService {
                 .compact();
     }
 
+    String getUsernameFromJwtToken(String token){
+        return Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload().getSubject();
+    }
 
 }

@@ -1,0 +1,24 @@
+sudo -u postgres psql
+CREATE DATABASE backend;
+CREATE USER rocker WITH PASSWORD 'rocker';
+ALTER USER rocker WITH SUPERUSER;
+ALTER DATABASE backend OWNER TO rocker;
+\c backend
+CREATE SCHEMA IF NOT EXISTS users;
+ALTER SCHEMA users OWNER TO rocker;
+GRANT ALL ON SCHEMA users TO rocker;
+CREATE TABLE IF NOT EXISTS users.users_details (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    phonenumber VARCHAR(10) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE
+);
+ALTER TABLE users.users_details
+ADD CONSTRAINT uq_users_details_name UNIQUE (name);
+GRANT ALL PRIVILEGES ON TABLE users.users_details TO rocker;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA users TO rocker;
+ALTER DEFAULT PRIVILEGES IN SCHEMA users
+GRANT ALL ON TABLES TO rocker;
+ALTER DEFAULT PRIVILEGES IN SCHEMA users
+GRANT ALL ON SEQUENCES TO rocker;

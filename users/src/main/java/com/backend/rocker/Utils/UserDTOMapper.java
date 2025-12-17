@@ -2,21 +2,19 @@ package com.backend.rocker.Utils;
 
 import com.backend.rocker.dtos.UserDTO;
 import com.backend.rocker.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserDTOMapper {
 
-    private static PasswordEncoder passwordEncoder ;
+    private final PasswordEncoder passwordEncoder ;
 
-    @Autowired
-    public void setPasswordEncoder(PasswordEncoder passwordEncoder){
-        this.setPasswordEncoder(passwordEncoder);
+    public UserDTOMapper(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public static UserDTO convertUserToDto(User user){
+    public UserDTO convertUserToDto(User user){
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(user.getEmail());
         userDTO.setPhoneNumber(user.getPhoneNumber());
@@ -25,7 +23,7 @@ public class UserDTOMapper {
         return userDTO;
     }
 
-    public static User convertDtoToUser(UserDTO userDTO){
+    public User convertDtoToUser(UserDTO userDTO){
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
@@ -34,7 +32,7 @@ public class UserDTOMapper {
         return user;
     }
 
-    public static UserDTO convertUserToDto(User user,String jwtToken){
+    public UserDTO convertUserToDto(User user,String jwtToken){
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(user.getEmail());
         userDTO.setPhoneNumber(user.getPhoneNumber());

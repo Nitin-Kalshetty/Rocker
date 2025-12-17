@@ -13,11 +13,14 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
 
+    private final UserDTOMapper userDTOMapper;
+
     private final JwtService jwtService;
 
-    public AuthService(AuthenticationManager authenticationManager,JwtService jwtService){
+    public AuthService(AuthenticationManager authenticationManager,JwtService jwtService,UserDTOMapper userDTOMapper){
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.userDTOMapper = userDTOMapper;
     }
 
 
@@ -29,7 +32,7 @@ public class AuthService {
         User user = (User) authentication.getPrincipal();
         String jwtToken = jwtService.generateJwtAccessToken(user);
 
-        return UserDTOMapper.convertUserToDto(user,jwtToken);
+        return userDTOMapper.convertUserToDto(user,jwtToken);
 
     }
 

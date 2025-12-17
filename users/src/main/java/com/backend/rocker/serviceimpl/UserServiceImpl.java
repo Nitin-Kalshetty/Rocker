@@ -17,13 +17,16 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    private final UserDTOMapper userDTOMapper;
+
+    public UserServiceImpl(UserRepository userRepository,UserDTOMapper userDTOMapper) {
         this.userRepository = userRepository;
+        this.userDTOMapper = userDTOMapper;
     }
 
     @Override
     public UserDTO registerUser(UserDTO requestUser) {
-        User duplicate = userRepository.findFirstByNameOrPhoneNumberOrEmail(
+        User duplicate = userRepository.findFirstByUsernameOrPhoneNumberOrEmail(
                 requestUser.getUsername(),
                 requestUser.getPhoneNumber(),
                 requestUser.getEmail());
@@ -38,9 +41,9 @@ public class UserServiceImpl implements UserService {
                 throw new DuplicateRecordFound("Email Already Registered");
             }
         }
-        User user = UserDTOMapper.convertDtoToUser(requestUser);
+        User user = userDTOMapper.convertDtoToUser(requestUser);
         User saved = userRepository.save(user);
-        return UserDTOMapper.convertUserToDto(saved);
+        return userDTOMapper.convertUserToDto(saved);
     }
 
 
@@ -65,8 +68,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO requestUser) {
-        User user = UserDTOMapper.convertDtoToUser(requestUser);
-        return UserDTOMapper.convertUserToDto(userRepository.save(user));
+        User user = userDTOMapper.convertDtoToUser(requestUser);
+        return userDTOMapper.convertUserToDto(userRepository.save(user));
     }
 
     @Override
@@ -87,7 +90,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO findUser(Supplier<Optional<User>> finder, String errorMsg) {
         User user = finder.get()
                 .orElseThrow(() -> new UserNotFoundException(errorMsg));
-        return UserDTOMapper.convertUserToDto(user);
+        return userDTOMapper.convertUserToDto(user);
     }
 
 }

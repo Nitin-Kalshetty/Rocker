@@ -1,6 +1,8 @@
 package com.backend.rocker.controller;
 
+import com.backend.rocker.dtos.LoginDTO;
 import com.backend.rocker.dtos.UserDTO;
+import com.backend.rocker.security.AuthService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +21,15 @@ public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
+    private final AuthService authService;
+
+    public AuthController(AuthService authService){
+        this.authService = authService;
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<UserDTO> loginUser(@RequestBody @Valid UserDTO requestDTO){
+    public ResponseEntity<LoginDTO> loginUser(@RequestBody @Valid LoginDTO requestDTO){
         logger.info("Triggered Login User Endpoint");
-        return new ResponseEntity<>(new UserDTO(), HttpStatus.CREATED);
+        return new ResponseEntity<>(authService.login(requestDTO), HttpStatus.CREATED);
     }
 }

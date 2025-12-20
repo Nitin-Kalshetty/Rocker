@@ -1,6 +1,7 @@
 package com.backend.rocker.security;
 
 import com.backend.rocker.Utils.UserDTOMapper;
+import com.backend.rocker.dtos.LoginDTO;
 import com.backend.rocker.dtos.UserDTO;
 import com.backend.rocker.model.User;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,16 +25,17 @@ public class AuthService {
     }
 
 
-    public UserDTO login(UserDTO userDTO){
+    public LoginDTO login(LoginDTO loginDTO){
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword())
+                new UsernamePasswordAuthenticationToken(loginDTO.getUsername(),loginDTO.getPassword())
         );
 
         User user = (User) authentication.getPrincipal();
         String jwtToken = jwtService.generateJwtAccessToken(user);
 
-        return userDTOMapper.convertUserToDto(user,jwtToken);
+        return userDTOMapper.convertUserToLoginDto(user,jwtToken);
 
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.backend.rocker.Utils;
 
+import com.backend.rocker.dtos.LoginDTO;
 import com.backend.rocker.dtos.UserDTO;
 import com.backend.rocker.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,5 +41,12 @@ public class UserDTOMapper {
         userDTO.setUserId(user.getId());
         userDTO.setJwtToken(jwtToken);
         return userDTO;
+    }
+
+    public LoginDTO convertUserToLoginDto(User user, String jwtToken){
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setUsername(user.getEmail());
+        loginDTO.setJwtToken(jwtToken);
+        return loginDTO;
     }
 }

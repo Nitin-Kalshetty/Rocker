@@ -2,6 +2,7 @@ package com.backend.rocker.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +34,11 @@ public class GlobalException {
         return buildError("VALIDATION_ERROR", message, request, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiError> handleWrongCredentialsRecord(BadCredentialsException ex, WebRequest request) {
+        return buildError("Wrong Username or Password", ex.getMessage(), request, HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, WebRequest request) {
         return buildError("INTERNAL_ERROR", ex.getMessage(), request, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -47,5 +53,6 @@ public class GlobalException {
 
         return new ResponseEntity<>(apiError, status);
     }
+
 }
 

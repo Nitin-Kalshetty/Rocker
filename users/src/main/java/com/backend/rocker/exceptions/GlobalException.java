@@ -38,7 +38,7 @@ public class GlobalException {
     public ResponseEntity<ApiError> handleWrongCredentialsRecord(BadCredentialsException ex, WebRequest request) {
         return buildError("Wrong Username or Password", ex.getMessage(), request, HttpStatus.BAD_REQUEST);
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, WebRequest request) {
         return buildError("INTERNAL_ERROR", ex.getMessage(), request, HttpStatus.INTERNAL_SERVER_ERROR);

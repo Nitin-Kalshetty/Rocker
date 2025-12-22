@@ -1,0 +1,72 @@
+CREATE SCHEMA IF NOT EXISTS product_service;
+
+SET search_path TO product_service;
+
+CREATE TABLE product_service.category (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    parent_id BIGINT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_category_parent
+        FOREIGN KEY (parent_id)
+        REFERENCES product_service.category(id)
+);
+
+CREATE TABLE product_service.product (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    description TEXT,
+    category_id BIGINT NOT NULL,
+    brand VARCHAR(100),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_product_category
+        FOREIGN KEY (category_id)
+        REFERENCES product_service.category(id)
+);
+
+CREATE TABLE product_service.product_price (
+    product_id BIGINT PRIMARY KEY,
+    price DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(10) DEFAULT 'INR',
+    discount_price DECIMAL(10,2),
+
+    CONSTRAINT fk_price_product
+        FOREIGN KEY (product_id)
+        REFERENCES product_service.product(id)
+);
+
+CREATE TABLE product_service.product_inventory (
+    product_id BIGINT PRIMARY KEY,
+    quantity INT NOT NULL,
+    reserved INT DEFAULT 0,
+
+    CONSTRAINT fk_inventory_product
+        FOREIGN KEY (product_id)
+        REFERENCES product_service.product(id)
+);
+
+CREATE TABLE product_service.product_image (
+    id BIGSERIAL PRIMARY KEY,
+    product_id BIGINT NOT NULL,
+    image_url TEXT NOT NULL,
+    is_primary BOOLEAN DEFAULT FALSE,
+
+    CONSTRAINT fk_image_product
+        FOREIGN KEY (product_id)
+        REFERENCES product_service.product(id)
+);
+
+CREATE TABLE product_service.product_attribute (
+    id BIGSERIAL PRIMARY KEY,
+    product_id BIGINT NOT NULL,
+    attr_key VARCHAR(50),
+    attr_value VARCHAR(100),
+
+    CONSTRAINT fk_attr_product
+        FOREIGN KEY (product_id)
+        REFERENCES product_service.product(id)
+);

@@ -1,5 +1,7 @@
 package com.backend.rocker.exceptions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,6 +12,8 @@ import org.springframework.web.context.request.WebRequest;
 
 @RestControllerAdvice
 public class GlobalException {
+
+    private final Logger logger = LoggerFactory.getLogger(GlobalException.class);
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ApiError> handleUserNotFound(UserNotFoundException ex, WebRequest request) {
@@ -45,6 +49,7 @@ public class GlobalException {
     }
 
     private ResponseEntity<ApiError> buildError(String code, String message, WebRequest request, HttpStatus status) {
+        logger.warn("API_ERROR code={} message={} status={} path={}", code,message, status.value(), request.getDescription(false));
         ApiError apiError = new ApiError.Builder()
                 .setErrorCode(code)
                 .setErrorMessage(message)

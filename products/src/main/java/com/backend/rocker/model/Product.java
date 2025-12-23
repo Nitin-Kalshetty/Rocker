@@ -1,21 +1,38 @@
 package com.backend.rocker.model;
 
+import jakarta.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "product",schema = "product_service")
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long id;
-    private String name;
-    private String description;
-    private Long categoryId;
-    private String brand;
-    private Boolean isActive;
-    private LocalDateTime createdAt;
 
-    public Product() {}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "category_id")
+    private Long categoryId;
+
+    @Column(name = "brand")
+    private String brand;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     public Long getId() {
         return this.id;

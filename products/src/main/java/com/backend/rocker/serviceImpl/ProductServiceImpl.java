@@ -8,7 +8,10 @@ import com.backend.rocker.services.ProductService;
 import com.backend.rocker.utility.ProductMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -29,8 +32,10 @@ public class ProductServiceImpl implements ProductService {
             product.setSku(generateSku());
         }
 
-        product.setCreatedAt(Instant.now());
-        product.setActive(request.getActive() != null ? request.getActive() : true
+        product.setCreatedAt(LocalDateTime.now());
+
+
+        product.setActive(productRequestDTO.getActive() != null ? productRequestDTO.getActive() : true
         );
 
         Product savedProduct = productRepository.save(product);

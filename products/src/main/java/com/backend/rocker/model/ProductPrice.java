@@ -1,8 +1,6 @@
 package com.backend.rocker.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,6 +10,10 @@ import java.math.BigDecimal;
 public class ProductPrice implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "product_id")
     private Long productId;
@@ -24,6 +26,14 @@ public class ProductPrice implements Serializable {
 
     @Column(name = "discount_price")
     private BigDecimal discountPrice;
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
     public Long getProductId() {
         return productId;

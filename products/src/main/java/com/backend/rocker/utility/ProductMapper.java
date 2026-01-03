@@ -4,11 +4,25 @@ import com.backend.rocker.dtos.ProductRequestDTO;
 import com.backend.rocker.dtos.ProductResponseDTO;
 import com.backend.rocker.model.Product;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Mapper(componentModel = "spring")
-public class ProductMapper {
+public interface ProductMapper {
 
-    public Product toEntity(ProductRequestDTO request);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    Product toEntity(ProductRequestDTO request);
 
-    public ProductResponseDTO toResponse(Product product);
+    @Mapping(target = "createdAt", source = "createdAt")
+    ProductResponseDTO toResponse(Product product);
+
+    default Instant map(LocalDateTime value) {
+        return value == null
+                ? null
+                : value.atZone(ZoneId.systemDefault()).toInstant();
+    }
 }

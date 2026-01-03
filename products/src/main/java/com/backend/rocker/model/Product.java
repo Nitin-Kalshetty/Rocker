@@ -28,6 +28,9 @@ public class Product implements Serializable {
     @Column(name = "brand")
     private String brand;
 
+    @Column(name = "sku")
+    private String sku;
+
     @Column(name = "is_active")
     private Boolean isActive;
 
@@ -90,6 +93,19 @@ public class Product implements Serializable {
         this.createdAt = createdAt;
     }
 
+    public String getSku() {
+        return this.sku;
+    }
 
+    public void setSku(final String sku) {
+        this.sku = sku;
+    }
 
+    public Boolean getActive() {
+        return this.isActive;
+    }
+
+    public void setActive(final Boolean active) {
+        this.isActive = active;
+    }
 }

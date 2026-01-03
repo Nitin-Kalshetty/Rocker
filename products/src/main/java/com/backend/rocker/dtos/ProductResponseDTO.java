@@ -1,5 +1,8 @@
 package com.backend.rocker.dtos;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+
 public class ProductResponseDTO {
 
     private Long id;

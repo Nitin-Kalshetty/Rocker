@@ -3,9 +3,11 @@ package com.backend.rocker.services;
 import com.backend.rocker.dtos.ProductRequestDTO;
 import com.backend.rocker.dtos.ProductResponseDTO;
 
+import java.util.List;
+
 public interface ProductService {
 
-    public ProductResponseDTO insertProduct(ProductRequestDTO productRequestDTO);
+    public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO);
 
     public List<ProductResponseDTO> getAllProducts();
 

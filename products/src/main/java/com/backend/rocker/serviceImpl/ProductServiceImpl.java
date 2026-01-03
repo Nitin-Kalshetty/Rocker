@@ -2,10 +2,13 @@ package com.backend.rocker.serviceImpl;
 
 import com.backend.rocker.dtos.ProductRequestDTO;
 import com.backend.rocker.dtos.ProductResponseDTO;
+import com.backend.rocker.model.Product;
 import com.backend.rocker.repository.ProductRepository;
 import com.backend.rocker.services.ProductService;
 import com.backend.rocker.utility.ProductMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -19,7 +22,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponseDTO insertProduct(ProductRequestDTO productRequestDTO) {
+    public ProductResponseDTO createProduct(ProductRequestDTO productRequestDTO) {
         Product product = productMapper.toEntity(productRequestDTO);
 
         if (product.getSku() == null || product.getSku().isBlank()) {
@@ -27,8 +30,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         product.setCreatedAt(Instant.now());
-        product.setActive(
-                request.getActive() != null ? request.getActive() : true
+        product.setActive(request.getActive() != null ? request.getActive() : true
         );
 
         Product savedProduct = productRepository.save(product);

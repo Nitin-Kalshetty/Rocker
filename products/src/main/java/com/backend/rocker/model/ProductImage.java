@@ -22,4 +22,36 @@ public class ProductImage implements Serializable {
 
     @Column(name = "is_primary")
     private Boolean isPrimary;
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Long getProductId() {
+        return this.productId;
+    }
+
+    public void setProductId(final Long productId) {
+        this.productId = productId;
+    }
+
+    public String getImageUrl() {
+        return this.imageUrl;
+    }
+
+    public void setImageUrl(final String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Boolean getPrimary() {
+        return this.isPrimary;
+    }
+
+    public void setPrimary(final Boolean primary) {
+        this.isPrimary = primary;
+    }
 }

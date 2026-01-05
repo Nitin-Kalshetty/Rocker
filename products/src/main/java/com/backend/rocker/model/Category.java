@@ -36,5 +36,44 @@ public class Category implements Serializable {
         this.createdAt = LocalDateTime.now();
     }
 
-    // getters & setters
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public Category getParent() {
+        return this.parent;
+    }
+
+    public void setParent(final Category parent) {
+        this.parent = parent;
+    }
+
+    public Boolean getActive() {
+        return this.active;
+    }
+
+    public void setActive(final Boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(final LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
 }
